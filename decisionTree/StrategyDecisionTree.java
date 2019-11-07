@@ -15,9 +15,6 @@ public class StrategyDecisionTree {
     }
 
 
-
-
-    // TODO maybe change later.
     /* Results */
     class NeuralResult implements DecisionTreeNode {
         @Override
