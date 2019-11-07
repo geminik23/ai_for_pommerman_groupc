@@ -13,7 +13,7 @@ public abstract class BaseDecision implements DecisionTreeNode {
     protected abstract DecisionTreeNode getBranch(DecisionParams param);
 
     @Override
-    public AgentState makeDecision(DecisionParams param) {
+    public AgentStrategy makeDecision(DecisionParams param) {
         DecisionTreeNode node = this.getBranch(param);
         if (node != null) return node.makeDecision(param);
         return null;

@@ -5,20 +5,20 @@ import core.GameState;
 public class DecisionResults {
     public class Aggresive implements DecisionTreeNode{
         @Override
-        public AgentState makeDecision(GameState gs) {
-            return AgentState.AGGRESIVE;
+        public AgentStrategy makeDecision(GameState gs) {
+            return AgentStrategy.AGGRESIVE;
         }
     }
     public class Defensive implements DecisionTreeNode{
         @Override
-        public AgentState makeDecision(GameState gs) {
-            return AgentState.DEFENSIVE;
+        public AgentStrategy makeDecision(GameState gs) {
+            return AgentStrategy.DEFENSIVE;
         }
     }
     public class Neutral implements DecisionTreeNode{
         @Override
-        public AgentState makeDecision(GameState gs) {
-            return AgentState.NEUTRAL;
+        public AgentStrategy makeDecision(GameState gs) {
+            return AgentStrategy.NEUTRAL;
         }
     }
 }

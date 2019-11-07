@@ -1,11 +1,10 @@
 package groupC;
 
 import core.GameState;
-import groupC.decisionTree.AgentState;
-import groupC.decisionTree.StateDecisionTree;
+import groupC.decisionTree.AgentStrategy;
+import groupC.decisionTree.StrategyDecisionTree;
 import players.Player;
 import players.mcts.MCTSParams;
-import players.mcts.SingleTreeNode;
 import players.optimisers.ParameterizedPlayer;
 import utils.ElapsedCpuTimer;
 import utils.Types;
@@ -24,11 +23,11 @@ public class GroupCPlayer extends ParameterizedPlayer {
     public MCTSParams params;
 
     /* decisionTree */
-    StateDecisionTree stateDecision;
+    StrategyDecisionTree stateDecision;
 
     GroupCPlayer(long seed, int id, MCTSParams param){
         super(seed, id, param);
-        stateDecision = new StateDecisionTree();
+        stateDecision = new StrategyDecisionTree();
     }
 
     @Override
@@ -46,7 +45,7 @@ public class GroupCPlayer extends ParameterizedPlayer {
     @Override
     public Types.ACTIONS act(GameState gs) {
         // 1. get Agent State
-        AgentState result = this.stateDecision.makeDecision(gs);
+        AgentStrategy result = this.stateDecision.makeDecision(gs);
 
 
         ElapsedCpuTimer ect = new ElapsedCpuTimer();

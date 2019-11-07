@@ -2,12 +2,13 @@ package groupC.decisionTree;
 
 import core.GameState;
 import utils.Types;
+import utils.Vector2d;
 
 import java.util.ArrayList;
 
 public class DecisionParams {
-
     //** player params
+    Vector2d playerPosition;
 
 
 
@@ -20,6 +21,7 @@ public class DecisionParams {
     }
 
     public void initWith(GameState gs) {
+
         int nEnemies = gs.getAliveEnemyIDs().size();
         // Init weights based on game mode
         if (gs.getGameMode() != Types.GAME_MODE.FFA) {
@@ -35,7 +37,14 @@ public class DecisionParams {
         }
         if (idx != -1) enemis.remove(idx);
 
-        
+        // player position
+        playerPosition = gs.getPosition();
+
+
+
+
+
+
 
     }
 }

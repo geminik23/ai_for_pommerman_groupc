@@ -2,14 +2,14 @@ package groupC.decisionTree;
 
 import core.GameState;
 
-public class StateDecisionTree {
+public class StrategyDecisionTree {
     DecisionTreeNode decisionRoot;
 
-    public StateDecisionTree(){
+    public StrategyDecisionTree(){
         decisionRoot = new AggressiveDecision(new AggressiveResult(), new DefensiveDecision(new DefensiveResult(), new NeuralResult()));
     }
 
-    public AgentState makeDecision(GameState gs){
+    public AgentStrategy makeDecision(GameState gs){
         DecisionParams param= new DecisionParams(gs);
         return this.decisionRoot.makeDecision(param);
     }
@@ -21,18 +21,18 @@ public class StateDecisionTree {
     /* Results */
     class NeuralResult implements DecisionTreeNode {
         @Override
-        public AgentState makeDecision(DecisionParams param) { return AgentState.NEUTRAL; }
+        public AgentStrategy makeDecision(DecisionParams param) { return AgentStrategy.NEUTRAL; }
     }
 
     class DefensiveResult implements DecisionTreeNode{
         @Override
-        public AgentState makeDecision(DecisionParams param) { return AgentState.DEFENSIVE; }
+        public AgentStrategy makeDecision(DecisionParams param) { return AgentStrategy.DEFENSIVE; }
     }
 
     class AggressiveResult implements DecisionTreeNode{
         @Override
-        public AgentState makeDecision(DecisionParams param) {
-            return AgentState.AGGRESIVE;
+        public AgentStrategy makeDecision(DecisionParams param) {
+            return AgentStrategy.AGGRESIVE;
         }
     }
 
