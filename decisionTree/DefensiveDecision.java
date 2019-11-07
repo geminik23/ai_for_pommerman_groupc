@@ -8,7 +8,6 @@ public class DefensiveDecision extends BaseDecision {
         super( truenode, falsenode);
     }
 
-
     @Override
     protected DecisionTreeNode getBranch(DecisionParams param) {
         if(param.ammo ==0  && param.min_enemy<DecisionParams.DISTANT_MEASUREMENT

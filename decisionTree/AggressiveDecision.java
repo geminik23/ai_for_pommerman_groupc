@@ -4,7 +4,7 @@ package groupC.decisionTree;
 public class AggressiveDecision extends BaseDecision {
 
     AggressiveDecision(DecisionTreeNode truenode, DecisionTreeNode falsenode){
-       super(null, falsenode);
+       super(truenode, falsenode);
     }
 
    @Override

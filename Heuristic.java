@@ -1,6 +1,7 @@
 package groupC;
 
 import core.GameState;
+import groupC.decisionTree.ActionStrategy;
 import groupC.extension.GameStateWrapper;
 import objects.Bomb;
 import objects.GameObject;
@@ -8,6 +9,7 @@ import players.heuristics.StateHeuristic;
 import utils.Types;
 import utils.Vector2d;
 
+import javax.swing.*;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -17,20 +19,23 @@ public class Heuristic {
 
     private BoardStats rootBoardStats;
     private Random random;
+    private ScoreFactor scoreFactor;
 
     public Heuristic(GameStateWrapper root, Random random) {
         this.random = random;
         rootBoardStats = new BoardStats(root, this.random);
-
+        this.scoreFactor = new ScoreFactor();
     }
 
-    public double evaluateState(GameStateWrapper gs) {
+    public double evaluateState(GameStateWrapper gs, ActionStrategy strategy) {
         boolean gameOver = gs.isTerminal();
         Types.RESULT win = gs.winner();
 
+        // adjusting the strategy
+        this.scoreFactor.adjustStrategy(strategy);
         // Compute a score relative to the root's state.
         BoardStats lastBoardState = new BoardStats(gs, this.random);
-        double rawScore = rootBoardStats.score(lastBoardState);
+        double rawScore = rootBoardStats.score(lastBoardState, this.scoreFactor);
 
         // TODO: Should we reserve -1 and 1 to LOSS and WIN, and shrink rawScore to be in [-0.5, 0.5]?
         // rawScore is in [-1, 1], move it to [-0.5, 0.5]
@@ -45,6 +50,63 @@ public class Heuristic {
         return rawScore;
     }
 
+    public class ScoreFactor {
+        // 0.4
+        double FACTOR_SAFE_DIRECTIONS = 0.2;
+        double FACTOR_BOMB_DIRECTIONS = 0.2;
+
+        // 0.1
+        double FACTOR_ENEMY_DIST = 0.1;
+
+        // 0.2
+        double FACTOR_CANKICK = 0.05;
+        double FACTOR_BLAST = 0.05;
+//        double FACTOR_ADJ_ENEMY = 0.12;
+        double FACTOR_NEAREST_POWERUP = 0.05;
+        double FACTOR_WOODS = 0.05;
+
+        void adjustStrategy(ActionStrategy strategy){
+            switch(strategy){
+                case AGGRESIVE:
+                    FACTOR_SAFE_DIRECTIONS = 0.35;
+                    FACTOR_BOMB_DIRECTIONS = 0.05;
+
+                    FACTOR_ENEMY_DIST = 0.05;
+
+                    FACTOR_CANKICK = 0.05;
+                    FACTOR_BLAST = 0.05;
+                    FACTOR_NEAREST_POWERUP = 0.05;
+                    FACTOR_WOODS = 0.05;
+                    break;
+
+                case NEUTRAL:
+                    FACTOR_SAFE_DIRECTIONS = 0.2;
+                    FACTOR_BOMB_DIRECTIONS = 0.2;
+
+                    FACTOR_ENEMY_DIST = 0.1;
+
+                    FACTOR_CANKICK = 0.025;
+                    FACTOR_BLAST = 0.025;
+                    FACTOR_NEAREST_POWERUP = 0.025;
+                    FACTOR_WOODS = 0.025;
+                    break;
+
+                case DEFENSIVE:
+                    FACTOR_SAFE_DIRECTIONS = 0.05;
+                    FACTOR_BOMB_DIRECTIONS = 0.35;
+
+                    FACTOR_ENEMY_DIST = 0.2;
+
+                    FACTOR_CANKICK = 0.005;
+                    FACTOR_BLAST = 0.005;
+                    FACTOR_NEAREST_POWERUP = 0.005;
+                    FACTOR_WOODS = 0.005;
+                    break;
+            }
+        }
+
+    }
+
     public static class BoardStats
     {
         int tick, nTeammates, nEnemies, blastStrength;
@@ -54,23 +116,10 @@ public class Heuristic {
         static double maxWoods = -1;
         static double maxBlastStrength = 10;
 
-        // 0.4
-        double FACTOR_SAFE_DIRECTIONS = 0.2;
-        double FACTOR_BOMB_DIRECTIONS = 0.2;
 
         // 0.3
         double FACTOR_ENEMY;
         double FACTOR_TEAM;
-
-        // 0.1
-        double FACTOR_ENEMY_DIST = 0.1;
-
-        // 0.2
-        double FACTOR_CANKICK = 0.05;
-        double FACTOR_BLAST = 0.05;
-        //double FACTOR_ADJ_ENEMY = 0.12;
-        double FACTOR_NEAREST_POWERUP = 0.05;
-        double FACTOR_WOODS = 0.05;
 
         // State information
         private Random random;
@@ -186,7 +235,7 @@ public class Heuristic {
          * @param futureState the stats of the board at the end of the rollout.
          * @return a score [0, 1]
          */
-        double score(BoardStats futureState)
+        double score(BoardStats futureState, ScoreFactor factor)
         {
             int diffSafeDirections = futureState.getNumberOfSafeDirections() - this.getNumberOfSafeDirections();
             int diffDirectionsInRangeOfBomb = -(futureState.getNumberOfDirectionsInRangeOfBomb() - this.getNumberOfDirectionsInRangeOfBomb());
@@ -199,19 +248,21 @@ public class Heuristic {
             int diffWoods = -(futureState.nWoods - this.nWoods);
             int diffCanKick = futureState.canKick && !this.canKick ? 1 : 0;
             int diffBlastStrength = futureState.blastStrength - this.blastStrength;
-            //int diffAdjacentEnemy = futureState.getIsAdjacentEnemy() - this.getIsAdjacentEnemy();
+//            int diffAdjacentEnemy = futureState.getIsAdjacentEnemy() - this.getIsAdjacentEnemy();
             int diffDistanceToNearestPowerUp = -(futureState.getDistanceToNearestPowerUp() - this.getDistanceToNearestPowerUp());
 
-            return (diffSafeDirections / 4.0) * FACTOR_SAFE_DIRECTIONS
-                    + (diffDirectionsInRangeOfBomb / 4.0) * FACTOR_BOMB_DIRECTIONS
+            double result = (diffSafeDirections / 4.0) * factor.FACTOR_SAFE_DIRECTIONS
+                    + (diffDirectionsInRangeOfBomb / 4.0) * factor.FACTOR_BOMB_DIRECTIONS
                     + (diffEnemies / 3.0) * FACTOR_ENEMY
                     + diffTeammates * FACTOR_TEAM
-                    + (diffDistanceToNearestEnemy / 10.0) * FACTOR_ENEMY_DIST
-                    + (diffWoods / maxWoods) * FACTOR_WOODS
-                    + diffCanKick * FACTOR_CANKICK
-                    + (diffBlastStrength / maxBlastStrength) * FACTOR_BLAST
-                    //+ diffAdjacentEnemy * FACTOR_ADJ_ENEMY
-                    + (diffDistanceToNearestPowerUp / 10.0) * FACTOR_NEAREST_POWERUP;
+                    + (diffDistanceToNearestEnemy / 10.0) * factor.FACTOR_ENEMY_DIST
+                    + (diffWoods / maxWoods) * factor.FACTOR_WOODS
+                    + diffCanKick * factor.FACTOR_CANKICK
+                    + (diffBlastStrength / maxBlastStrength) * factor.FACTOR_BLAST
+//                    + diffAdjacentEnemy * FACTOR_ADJ_ENEMY
+                    + (diffDistanceToNearestPowerUp / 10.0) * factor.FACTOR_NEAREST_POWERUP;
+
+            return result;
         }
 
         private HashMap<Types.DIRECTIONS, Integer> getDirectionsInRangeOfBomb(){

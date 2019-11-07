@@ -14,9 +14,9 @@ public class DecisionParams {
     public static double DISTANT_MEASUREMENT = 7.01; // diagonal distance of (5,5)
 
     Vector2d playerPosition;
-    ArrayList<Vector2d> enemies;
-    ArrayList<Bomb> bombs;
-    ArrayList<Flame> flames;
+    ArrayList<Vector2d> enemies = new ArrayList<>();
+    ArrayList<Bomb> bombs = new ArrayList<>();
+    ArrayList<Flame> flames = new ArrayList<>();
 
     int ammo;
     Types.TILETYPE[][] board; // + board size

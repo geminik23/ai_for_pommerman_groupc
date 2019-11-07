@@ -5,7 +5,6 @@ import groupC.decisionTree.ActionStrategy;
 import groupC.decisionTree.StrategyDecisionTree;
 import groupC.extension.GameStateWrapper;
 import players.Player;
-import players.mcts.MCTSParams;
 import players.optimisers.ParameterizedPlayer;
 import utils.ElapsedCpuTimer;
 import utils.Types;
@@ -28,16 +27,16 @@ public class GroupCPlayer extends ParameterizedPlayer {
 
     /* GameState Wrapper */
     GameStateWrapper gsw;
-
-    GroupCPlayer(long seed, int id, MCTSParams param){
-        super(seed, id, param);
-        stateDecision = new StrategyDecisionTree();
-        gsw = new GameStateWrapper();
+    public GroupCPlayer(long seed, int id)
+    {
+        this(seed, id, new MCTSParams());
     }
 
-    @Override
-    public void reset(long seed, int playerID) {
-        super.reset(seed, playerID);
+    public GroupCPlayer(long seed, int id, MCTSParams param){
+        super(seed, id, param);
+        reset(seed, id);
+        this.stateDecision = new StrategyDecisionTree();
+        this.gsw = new GameStateWrapper(param.policy);
 
         ArrayList<Types.ACTIONS> actionsList = Types.ACTIONS.all();
         actions = new Types.ACTIONS[actionsList.size()];
@@ -48,13 +47,25 @@ public class GroupCPlayer extends ParameterizedPlayer {
     }
 
     @Override
+    public void reset(long seed, int playerID) {
+        super.reset(seed, playerID);
+        m_rnd = new Random(seed);
+
+        this.params = (MCTSParams) getParameters();
+
+        if (this.params == null) {
+            this.params = new MCTSParams();
+            super.setParameters(this.params);
+        }
+    }
+
+    @Override
     public Types.ACTIONS act(GameState gs) {
         // Wrapping GameState
         gsw.setGameState(gs);
 
         // get Agent State
         ActionStrategy strategy = this.stateDecision.makeDecision(gs);
-
 
         ElapsedCpuTimer ect = new ElapsedCpuTimer();
         ect.setMaxTimeMillis(params.num_time);

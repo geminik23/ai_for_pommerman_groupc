@@ -2,7 +2,6 @@ package groupC;
 
 import groupC.decisionTree.ActionStrategy;
 import groupC.extension.GameStateWrapper;
-import players.mcts.MCTSParams;
 import utils.ElapsedCpuTimer;
 import utils.Types;
 import utils.Utils;
@@ -208,7 +207,7 @@ public class MCTSNode
             thisDepth++;
         }
 
-        return heuristic.evaluateState(state);
+        return heuristic.evaluateState(state, strategy);
     }
 
     private int safeRandomAction(GameStateWrapper state)
@@ -294,8 +293,7 @@ public class MCTSNode
             }
         }
 
-        if (selected == -1)
-        {
+        if (selected == -1) {
             selected = 0;
         }else if(allEqual)
         {
@@ -312,7 +310,6 @@ public class MCTSNode
         double bestValue = -Double.MAX_VALUE;
 
         for (int i=0; i<children.length; i++) {
-
             if(children[i] != null) {
                 double childValue = children[i].totValue / (children[i].nVisits + params.epsilon);
                 childValue = Utils.noise(childValue, params.epsilon, this.m_rnd.nextDouble());     //break ties randomly
@@ -323,8 +320,7 @@ public class MCTSNode
             }
         }
 
-        if (selected == -1)
-        {
+        if (selected == -1) {
             System.out.println("Unexpected selection!");
             selected = 0;
         }
