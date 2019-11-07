@@ -10,7 +10,7 @@ public class AggressiveDecision extends BaseDecision {
    @Override
    protected DecisionTreeNode getBranch(DecisionParams param) {
        //TODO
-       return null;
+       return trueNode;
    }
 
 

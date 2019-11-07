@@ -10,7 +10,7 @@ public class DefensiveDecision extends BaseDecision {
 
 
     @Override
-    protected DecisionTreeNode getBranch(GameState gs) {
+    protected DecisionTreeNode getBranch(DecisionParams param) {
         return null;
     }
 

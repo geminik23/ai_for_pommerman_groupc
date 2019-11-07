@@ -1,12 +1,16 @@
 package groupC;
 
 import core.GameState;
-import groupC.decisionTree.DecisionTreeNode;
+import groupC.decisionTree.AgentState;
+import groupC.decisionTree.StateDecisionTree;
 import players.Player;
 import players.mcts.MCTSParams;
+import players.mcts.SingleTreeNode;
 import players.optimisers.ParameterizedPlayer;
+import utils.ElapsedCpuTimer;
 import utils.Types;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class GroupCPlayer extends ParameterizedPlayer {
@@ -20,25 +24,51 @@ public class GroupCPlayer extends ParameterizedPlayer {
     public MCTSParams params;
 
     /* decisionTree */
-    DecisionTreeNode decisionTree;
+    StateDecisionTree stateDecision;
 
     GroupCPlayer(long seed, int id, MCTSParams param){
         super(seed, id, param);
+        stateDecision = new StateDecisionTree();
     }
-
 
     @Override
     public void reset(long seed, int playerID) {
         super.reset(seed, playerID);
+
+        ArrayList<Types.ACTIONS> actionsList = Types.ACTIONS.all();
+        actions = new Types.ACTIONS[actionsList.size()];
+        int i = 0;
+        for (Types.ACTIONS act : actionsList) {
+            actions[i++] = act;
+        }
     }
 
     @Override
     public Types.ACTIONS act(GameState gs) {
         // 1. get Agent State
-        
+        AgentState result = this.stateDecision.makeDecision(gs);
+
+
+        ElapsedCpuTimer ect = new ElapsedCpuTimer();
+        ect.setMaxTimeMillis(params.num_time);
+
         // 2. update the parameter or send with states
 
-        return Types.ACTIONS.ACTION_STOP;
+
+        // Number of actions available
+        int num_actions = actions.length;
+
+        // Root of the tree
+        MCTSNode m_root = new MCTSNode(params, m_rnd, num_actions, actions);
+        m_root.setRootGameState(gs);
+
+        //Determine the action using MCTS...
+        m_root.mctsSearch(ect);
+
+        //Determine the best action to take and return it.
+        int action = m_root.mostVisitedAction();
+
+        return this.actions[action];
     }
 
     @Override

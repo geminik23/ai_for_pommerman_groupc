@@ -5,19 +5,20 @@ import core.GameState;
 public class StateDecisionTree {
     DecisionTreeNode decisionRoot;
 
-    StateDecisionTree(){
+    public StateDecisionTree(){
         decisionRoot = new AggressiveDecision(new AggressiveResult(), new DefensiveDecision(new DefensiveResult(), new NeuralResult()));
     }
 
     public AgentState makeDecision(GameState gs){
         DecisionParams param= new DecisionParams(gs);
-        //TODO
         return this.decisionRoot.makeDecision(param);
     }
 
 
 
 
+    // TODO maybe change later.
+    /* Results */
     class NeuralResult implements DecisionTreeNode {
         @Override
         public AgentState makeDecision(DecisionParams param) { return AgentState.NEUTRAL; }
