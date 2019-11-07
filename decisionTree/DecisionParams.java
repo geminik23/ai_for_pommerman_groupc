@@ -9,11 +9,15 @@ import java.util.ArrayList;
 public class DecisionParams {
     //** player params
     Vector2d playerPosition;
-
-
+    int ammo;
+    ArrayList<Types.TILETYPE> enemis;
 
     //** overall params
+    boolean teamMode;
 
+    int[][] bombBlastStrength;
+    int[][] bombLife;
+    Types.TILETYPE[][] board;
 
     DecisionParams(){}
     DecisionParams(GameState gs){
@@ -21,14 +25,11 @@ public class DecisionParams {
     }
 
     public void initWith(GameState gs) {
-
+        // get GameState params for Decision Tree
         int nEnemies = gs.getAliveEnemyIDs().size();
-        // Init weights based on game mode
-        if (gs.getGameMode() != Types.GAME_MODE.FFA) {
-            int nTeammates = gs.getAliveTeammateIDs().size();  // We only need to know the alive teammates in team modes
-            nEnemies -= 1;  // In team modes there's an extra Dummy agent added that we don't need to care about
-        }
-        ArrayList<Types.TILETYPE> enemis = gs.getAliveEnemyIDs();
+        teamMode = gs.getGameMode() != Types.GAME_MODE.FFA;
+        enemis = gs.getAliveEnemyIDs();
+
         int idx = -1;
         for (int i = 0; i < enemis.size(); i++) {
             if (enemis.get(i) == Types.TILETYPE.AGENTDUMMY){
@@ -39,6 +40,11 @@ public class DecisionParams {
 
         // player position
         playerPosition = gs.getPosition();
+        ammo = gs.getAmmo();
+
+        bombBlastStrength = gs.getBombBlastStrength();
+        bombLife = gs.getBombLife();
+        board = gs.getBoard();
 
 
 
@@ -47,4 +53,5 @@ public class DecisionParams {
 
 
     }
+
 }

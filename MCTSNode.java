@@ -1,6 +1,7 @@
 package groupC;
 
 import core.GameState;
+import groupC.decisionTree.AgentStrategy;
 import players.heuristics.AdvancedHeuristic;
 import players.heuristics.CustomHeuristic;
 import players.heuristics.StateHeuristic;
@@ -34,12 +35,15 @@ public class MCTSNode
     private GameState rootState;
     private StateHeuristic rootStateHeuristic;
 
-    MCTSNode(MCTSParams p, Random rnd, int num_actions, Types.ACTIONS[] actions) {
-        this(p, null, -1, rnd, num_actions, actions, 0, null);
+    // agent strategy
+    private AgentStrategy strategy;
+
+    MCTSNode(MCTSParams p, Random rnd, int num_actions, Types.ACTIONS[] actions, AgentStrategy strategy) {
+        this(p, null, -1, rnd, num_actions, actions, 0, null, strategy);
     }
 
     private MCTSNode(MCTSParams p, MCTSNode parent, int childIdx, Random rnd, int num_actions,
-                           Types.ACTIONS[] actions, int fmCallsCount, StateHeuristic sh) {
+                           Types.ACTIONS[] actions, int fmCallsCount, StateHeuristic sh, AgentStrategy strategy) {
         this.params = p;
         this.fmCallsCount = fmCallsCount;
         this.parent = parent;
@@ -49,6 +53,7 @@ public class MCTSNode
         children = new MCTSNode[num_actions];
         totValue = 0.0;
         this.childIdx = childIdx;
+        this.strategy = strategy;
         if(parent != null) {
             m_depth = parent.m_depth + 1;
             this.rootStateHeuristic = sh;
@@ -139,7 +144,7 @@ public class MCTSNode
         roll(gs , actions[bestAction]);
 
         MCTSNode tn = new MCTSNode(params,this,bestAction,this.m_rnd,num_actions,
-                actions, fmCallsCount, rootStateHeuristic);
+                actions, fmCallsCount, rootStateHeuristic, strategy);
         children[bestAction] = tn;
         return tn;
     }

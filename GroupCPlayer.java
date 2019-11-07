@@ -45,20 +45,17 @@ public class GroupCPlayer extends ParameterizedPlayer {
     @Override
     public Types.ACTIONS act(GameState gs) {
         // 1. get Agent State
-        AgentStrategy result = this.stateDecision.makeDecision(gs);
+        AgentStrategy strategy = this.stateDecision.makeDecision(gs);
 
 
         ElapsedCpuTimer ect = new ElapsedCpuTimer();
         ect.setMaxTimeMillis(params.num_time);
 
-        // 2. update the parameter or send with states
-
-
         // Number of actions available
         int num_actions = actions.length;
 
         // Root of the tree
-        MCTSNode m_root = new MCTSNode(params, m_rnd, num_actions, actions);
+        MCTSNode m_root = new MCTSNode(params, m_rnd, num_actions, actions, strategy);
         m_root.setRootGameState(gs);
 
         //Determine the action using MCTS...
