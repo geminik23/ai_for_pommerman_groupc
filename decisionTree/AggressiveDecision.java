@@ -9,9 +9,11 @@ public class AggressiveDecision extends BaseDecision {
 
    @Override
    protected DecisionTreeNode getBranch(DecisionParams param) {
-       //TODO
-
-       return trueNode;
+       if (param.ammo == 0 && param.min_enemy <= DecisionParams.DISTANT_MEASUREMENT
+       && param.min_bomb > DecisionParams.DISTANT_MEASUREMENT){
+           return trueNode;
+       }
+       return falseNode;
    }
 
 

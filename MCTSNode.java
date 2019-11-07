@@ -1,10 +1,7 @@
 package groupC;
 
-import core.GameState;
-import groupC.decisionTree.AgentStrategy;
-import players.heuristics.AdvancedHeuristic;
-import players.heuristics.CustomHeuristic;
-import players.heuristics.StateHeuristic;
+import groupC.decisionTree.ActionStrategy;
+import groupC.extension.GameStateWrapper;
 import players.mcts.MCTSParams;
 import utils.ElapsedCpuTimer;
 import utils.Types;
@@ -32,18 +29,18 @@ public class MCTSNode
     private int num_actions;
     private Types.ACTIONS[] actions;
 
-    private GameState rootState;
-    private StateHeuristic rootStateHeuristic;
+    private GameStateWrapper rootState;
+    private Heuristic heuristic;
 
     // agent strategy
-    private AgentStrategy strategy;
+    private ActionStrategy strategy;
 
-    MCTSNode(MCTSParams p, Random rnd, int num_actions, Types.ACTIONS[] actions, AgentStrategy strategy) {
+    MCTSNode(MCTSParams p, Random rnd, int num_actions, Types.ACTIONS[] actions, ActionStrategy strategy) {
         this(p, null, -1, rnd, num_actions, actions, 0, null, strategy);
     }
 
     private MCTSNode(MCTSParams p, MCTSNode parent, int childIdx, Random rnd, int num_actions,
-                           Types.ACTIONS[] actions, int fmCallsCount, StateHeuristic sh, AgentStrategy strategy) {
+                           Types.ACTIONS[] actions, int fmCallsCount, Heuristic sh, ActionStrategy strategy) {
         this.params = p;
         this.fmCallsCount = fmCallsCount;
         this.parent = parent;
@@ -56,19 +53,16 @@ public class MCTSNode
         this.strategy = strategy;
         if(parent != null) {
             m_depth = parent.m_depth + 1;
-            this.rootStateHeuristic = sh;
+            this.heuristic = sh;
         }
         else
             m_depth = 0;
     }
 
-    void setRootGameState(GameState gs)
+    void setRootGameState(GameStateWrapper gs)
     {
         this.rootState= gs;
-        if (params.heuristic_method == params.CUSTOM_HEURISTIC)
-            this.rootStateHeuristic = new CustomHeuristic(gs);
-        else if (params.heuristic_method == params.ADVANCED_HEURISTIC) // New method: combined heuristics
-            this.rootStateHeuristic = new AdvancedHeuristic(gs, m_rnd);
+        this.heuristic = new Heuristic(gs, m_rnd);
     }
 
 
@@ -83,7 +77,7 @@ public class MCTSNode
         boolean stop = false;
 
         while(!stop){
-            GameState state = rootState.copy();
+            GameStateWrapper state = rootState.copy();
             /// estimate the time
             ElapsedCpuTimer elapsedTimerIteration = new ElapsedCpuTimer();
 
@@ -111,7 +105,7 @@ public class MCTSNode
         //System.out.println(" ITERS " + numIters);
     }
 
-    private MCTSNode treePolicy(GameState gs) {
+    private MCTSNode treePolicy(GameStateWrapper gs) {
         MCTSNode cur = this;
 
         while (!gs.isTerminal() && cur.m_depth < params.rollout_depth) //
@@ -127,7 +121,7 @@ public class MCTSNode
     }
 
 
-    private MCTSNode expand(GameState gs) {
+    private MCTSNode expand(GameStateWrapper gs) {
 
         int bestAction = 0;
         double bestValue = -1;
@@ -144,13 +138,13 @@ public class MCTSNode
         roll(gs , actions[bestAction]);
 
         MCTSNode tn = new MCTSNode(params,this,bestAction,this.m_rnd,num_actions,
-                actions, fmCallsCount, rootStateHeuristic, strategy);
+                actions, fmCallsCount, heuristic, strategy);
         children[bestAction] = tn;
         return tn;
     }
 
     /// SIMULATION?
-    private void roll(GameState gs, Types.ACTIONS act)
+    private void roll(GameStateWrapper gs, Types.ACTIONS act)
     {
         //Simple, all random first, then my position.
         int nPlayers = 4;
@@ -171,7 +165,7 @@ public class MCTSNode
         gs.next(actionsAll);
     }
 
-    private MCTSNode uct(GameState state) {
+    private MCTSNode uct(GameStateWrapper state) {
         MCTSNode selected = null;
 
         double bestValue = -Double.MAX_VALUE;
@@ -204,7 +198,7 @@ public class MCTSNode
         return selected;
     }
 
-    private double rollOut(GameState state)
+    private double rollOut(GameStateWrapper state)
     {
         int thisDepth = this.m_depth;
 
@@ -214,10 +208,10 @@ public class MCTSNode
             thisDepth++;
         }
 
-        return rootStateHeuristic.evaluateState(state);
+        return heuristic.evaluateState(state);
     }
 
-    private int safeRandomAction(GameState state)
+    private int safeRandomAction(GameStateWrapper state)
     {
         Types.TILETYPE[][] board = state.getBoard();
         ArrayList<Types.ACTIONS> actionsToTry = Types.ACTIONS.all();
@@ -245,7 +239,7 @@ public class MCTSNode
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private boolean finishRollout(GameState rollerState, int depth)
+    private boolean finishRollout(GameStateWrapper rollerState, int depth)
     {
         if (depth >= params.rollout_depth)      //rollout end condition.
             return true;

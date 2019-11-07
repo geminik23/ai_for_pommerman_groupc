@@ -2,20 +2,28 @@ package groupC.decisionTree;
 
 import core.GameState;
 import objects.Bomb;
+import objects.Flame;
 import utils.Types;
 import utils.Vector2d;
 
 import java.util.ArrayList;
 
+
+
 public class DecisionParams {
-    //** player params
+    public static double DISTANT_MEASUREMENT = 7.01; // diagonal distance of (5,5)
+
     Vector2d playerPosition;
     ArrayList<Vector2d> enemies;
     ArrayList<Bomb> bombs;
+    ArrayList<Flame> flames;
 
     int ammo;
-    Types.TILETYPE[][] board;
+    Types.TILETYPE[][] board; // + board size
 
+    double min_enemy = Double.POSITIVE_INFINITY;
+    double min_bomb = Double.POSITIVE_INFINITY;
+    double min_flame = Double.POSITIVE_INFINITY;
 
     /* constructor */
     DecisionParams(){}
@@ -24,6 +32,7 @@ public class DecisionParams {
     }
 
     public void initWith(GameState gs) {
+
         // get GameState params for Decision Tree
         ArrayList<Types.TILETYPE> enemis = gs.getAliveEnemyIDs();
         int idx = -1;
@@ -38,6 +47,7 @@ public class DecisionParams {
         int[][] bombLife = gs.getBombLife();
         board = gs.getBoard();
 
+        // get Items and Enemies
         for (int j=0;j<board.length;j++){
             for(int i=0;i<board.length;i++){
                 switch(this.board[j][i]){
@@ -47,12 +57,26 @@ public class DecisionParams {
                     case AGENT3:
                         if (playerPosition.equals(new Vector2d(i, j))) break;
                         if (enemis.contains(this.board[j][i])) this.enemies.add(new Vector2d(i,j));
+                        min_enemy = Math.min(min_bomb, playerPosition.dist(i,j));
                         break;
                     case BOMB:
                     case EXTRABOMB:
-                        
+                        Bomb b = new Bomb();
+                        b.setPosition(new Vector2d(i, j));
+                        b.setBlastStrength(bombBlastStrength[j][i]);
+                        b.setLife(bombLife[j][i]);
+                        this.bombs.add(b);
 
-
+                        min_bomb = Math.min(min_bomb, b.getPosition().dist(playerPosition));
+                        break;
+                    case FLAMES:
+                        Flame f = new Flame();
+                        f.setPosition(new Vector2d(i,j));
+                        this.flames.add(f);
+                        min_flame= Math.min(min_flame, f.getPosition().dist(playerPosition));
+                        break;
+                    default:
+                        break;
                 }
             }
         }

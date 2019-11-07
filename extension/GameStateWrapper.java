@@ -1,4 +1,4 @@
-package groupC;
+package groupC.extension;
 import core.GameState;
 import utils.Types;
 import utils.Vector2d;

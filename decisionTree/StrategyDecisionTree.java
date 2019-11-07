@@ -9,7 +9,7 @@ public class StrategyDecisionTree {
         decisionRoot = new AggressiveDecision(new AggressiveResult(), new DefensiveDecision(new DefensiveResult(), new NeuralResult()));
     }
 
-    public AgentStrategy makeDecision(GameState gs){
+    public ActionStrategy makeDecision(GameState gs){
         DecisionParams param= new DecisionParams(gs);
         return this.decisionRoot.makeDecision(param);
     }
@@ -18,18 +18,18 @@ public class StrategyDecisionTree {
     /* Results */
     class NeuralResult implements DecisionTreeNode {
         @Override
-        public AgentStrategy makeDecision(DecisionParams param) { return AgentStrategy.NEUTRAL; }
+        public ActionStrategy makeDecision(DecisionParams param) { return ActionStrategy.NEUTRAL; }
     }
 
     class DefensiveResult implements DecisionTreeNode{
         @Override
-        public AgentStrategy makeDecision(DecisionParams param) { return AgentStrategy.DEFENSIVE; }
+        public ActionStrategy makeDecision(DecisionParams param) { return ActionStrategy.DEFENSIVE; }
     }
 
     class AggressiveResult implements DecisionTreeNode{
         @Override
-        public AgentStrategy makeDecision(DecisionParams param) {
-            return AgentStrategy.AGGRESIVE;
+        public ActionStrategy makeDecision(DecisionParams param) {
+            return ActionStrategy.AGGRESIVE;
         }
     }
 

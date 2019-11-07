@@ -1,6 +1,6 @@
 package groupC.decisionTree;
 
-public enum AgentStrategy {
+public enum ActionStrategy {
     None,
     AGGRESIVE,
     DEFENSIVE,

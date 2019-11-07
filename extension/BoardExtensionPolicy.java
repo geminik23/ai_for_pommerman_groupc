@@ -1,4 +1,4 @@
-package groupC;
+package groupC.extension;
 
 public enum BoardExtensionPolicy {
     NO_EXTENSION,

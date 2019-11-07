@@ -1,8 +1,9 @@
 package groupC;
 
 import core.GameState;
-import groupC.decisionTree.AgentStrategy;
+import groupC.decisionTree.ActionStrategy;
 import groupC.decisionTree.StrategyDecisionTree;
+import groupC.extension.GameStateWrapper;
 import players.Player;
 import players.mcts.MCTSParams;
 import players.optimisers.ParameterizedPlayer;
@@ -25,9 +26,13 @@ public class GroupCPlayer extends ParameterizedPlayer {
     /* decisionTree */
     StrategyDecisionTree stateDecision;
 
+    /* GameState Wrapper */
+    GameStateWrapper gsw;
+
     GroupCPlayer(long seed, int id, MCTSParams param){
         super(seed, id, param);
         stateDecision = new StrategyDecisionTree();
+        gsw = new GameStateWrapper();
     }
 
     @Override
@@ -44,8 +49,11 @@ public class GroupCPlayer extends ParameterizedPlayer {
 
     @Override
     public Types.ACTIONS act(GameState gs) {
-        // 1. get Agent State
-        AgentStrategy strategy = this.stateDecision.makeDecision(gs);
+        // Wrapping GameState
+        gsw.setGameState(gs);
+
+        // get Agent State
+        ActionStrategy strategy = this.stateDecision.makeDecision(gs);
 
 
         ElapsedCpuTimer ect = new ElapsedCpuTimer();
@@ -56,7 +64,7 @@ public class GroupCPlayer extends ParameterizedPlayer {
 
         // Root of the tree
         MCTSNode m_root = new MCTSNode(params, m_rnd, num_actions, actions, strategy);
-        m_root.setRootGameState(gs);
+        m_root.setRootGameState(gsw);
 
         //Determine the action using MCTS...
         m_root.mctsSearch(ect);
