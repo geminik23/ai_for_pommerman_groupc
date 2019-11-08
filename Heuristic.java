@@ -51,17 +51,13 @@ public class Heuristic {
     }
 
     public class ScoreFactor {
-        // 0.4
         double FACTOR_SAFE_DIRECTIONS = 0.2;
         double FACTOR_BOMB_DIRECTIONS = 0.2;
 
-        // 0.1
         double FACTOR_ENEMY_DIST = 0.1;
 
-        // 0.2
         double FACTOR_CANKICK = 0.05;
         double FACTOR_BLAST = 0.05;
-//        double FACTOR_ADJ_ENEMY = 0.12;
         double FACTOR_NEAREST_POWERUP = 0.05;
         double FACTOR_WOODS = 0.05;
 

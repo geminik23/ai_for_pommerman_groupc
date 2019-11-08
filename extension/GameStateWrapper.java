@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class GameStateWrapper {
     GameState internal;
-    BoardExtensionPolicy policy;
+    ExtensionMode policy;
     boolean updated = false;
 
     Types.TILETYPE[][] extendedBoard = null;
@@ -22,15 +22,15 @@ public class GameStateWrapper {
     int bombBlastStrength[][] = null;
 
     public GameStateWrapper(){
-        this(BoardExtensionPolicy.DEFAULT_EXTENSION);
+        this(ExtensionMode.DEFAULT_EXTENSION);
     }
 
-    public GameStateWrapper(BoardExtensionPolicy policy){
+    public GameStateWrapper(ExtensionMode policy){
         this.policy = policy;
-        if (Types.DEFAULT_VISION_RANGE == -1){ this.policy = BoardExtensionPolicy.NO_EXTENSION; }
+        if (Types.DEFAULT_VISION_RANGE == -1){ this.policy = ExtensionMode.NO_EXTENSION; }
     }
 
-    boolean noExtension(){return this.policy == BoardExtensionPolicy.NO_EXTENSION;}
+    boolean noExtension(){return this.policy == ExtensionMode.NO_EXTENSION;}
 
     public void setGameState(GameState gs){
         this.internal = gs;
@@ -70,7 +70,7 @@ public class GameStateWrapper {
                     case RIGID: break; // ignore
                     /* weapons */
                     case BOMB:
-                        if (this.policy == BoardExtensionPolicy.PREDICT_BOMB){
+                        if (this.policy == ExtensionMode.PREDICT_BOMB){
                             switch( oboard[i][j]){
                                 case FOG: // increase member variable
                                     if (--this.bombLife[i][j] == 0) {
@@ -100,7 +100,7 @@ public class GameStateWrapper {
     }
 
     GameStateWrapper copy(GameState gs){
-        var gsw = new GameStateWrapper();
+        GameStateWrapper gsw = new GameStateWrapper();
         gsw.setGameState(gs.copy()); // copy GameState Object
 
         if (this.noExtension()) return gsw;
@@ -139,7 +139,7 @@ public class GameStateWrapper {
     public int[][] getBombBlastStrength(){return internal.getBombBlastStrength();}
 
     public int[][] getBombLife() {
-        if (this.policy == BoardExtensionPolicy.PREDICT_BOMB){
+        if (this.policy == ExtensionMode.PREDICT_BOMB){
             return this.bombLife;
         }
         return internal.getBombLife();

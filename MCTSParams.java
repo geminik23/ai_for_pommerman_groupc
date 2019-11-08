@@ -1,6 +1,6 @@
 package groupC;
 
-import groupC.extension.BoardExtensionPolicy;
+import groupC.extension.ExtensionMode;
 import players.optimisers.ParameterSet;
 import utils.Pair;
 
@@ -25,7 +25,7 @@ public class MCTSParams implements ParameterSet {
     public double K = Math.sqrt(2);
     public int rollout_depth = 8;//10;
 
-    public BoardExtensionPolicy policy = BoardExtensionPolicy.NO_EXTENSION;
+    public ExtensionMode policy = ExtensionMode.NO_EXTENSION;
 
     // Budget settings
     public int stop_type = STOP_TIME;
@@ -34,7 +34,7 @@ public class MCTSParams implements ParameterSet {
     public int num_time = 40;
 
     public MCTSParams(){}
-    public MCTSParams(BoardExtensionPolicy policy){this.policy = policy;}
+    public MCTSParams(ExtensionMode policy){this.policy = policy;}
 
     @Override
     public void setParameterValue(String param, Object value) {
