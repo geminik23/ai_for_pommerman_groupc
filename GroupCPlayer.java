@@ -20,7 +20,7 @@ public class GroupCPlayer extends ParameterizedPlayer {
     public Types.ACTIONS[] actions;
 
      /* Params for this MCTS */
-    public MCTSParams params;
+    public GroupCParam params;
 
     /* decisionTree */
     StrategyDecisionTree stateDecision;
@@ -29,10 +29,10 @@ public class GroupCPlayer extends ParameterizedPlayer {
     GameStateWrapper gsw;
     public GroupCPlayer(long seed, int id)
     {
-        this(seed, id, new MCTSParams());
+        this(seed, id, new GroupCParam());
     }
 
-    public GroupCPlayer(long seed, int id, MCTSParams param){
+    public GroupCPlayer(long seed, int id, GroupCParam param){
         super(seed, id, param);
         reset(seed, id);
         this.stateDecision = new StrategyDecisionTree();
@@ -51,10 +51,10 @@ public class GroupCPlayer extends ParameterizedPlayer {
         super.reset(seed, playerID);
         m_rnd = new Random(seed);
 
-        this.params = (MCTSParams) getParameters();
+        this.params = (GroupCParam) getParameters();
 
         if (this.params == null) {
-            this.params = new MCTSParams();
+            this.params = new GroupCParam();
             super.setParameters(this.params);
         }
     }

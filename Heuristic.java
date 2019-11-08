@@ -37,8 +37,6 @@ public class Heuristic {
         BoardStats lastBoardState = new BoardStats(gs, this.random);
         double rawScore = rootBoardStats.score(lastBoardState, this.scoreFactor);
 
-        // TODO: Should we reserve -1 and 1 to LOSS and WIN, and shrink rawScore to be in [-0.5, 0.5]?
-        // rawScore is in [-1, 1], move it to [-0.5, 0.5]
         rawScore /= 2.0;
 
         if(gameOver && win == Types.RESULT.LOSS)
@@ -507,7 +505,7 @@ public class Heuristic {
                 HashMap<Vector2d, Integer> dist,
                 ArrayList<GameObject> enemies)
         {
-            int distance = 1000; // TODO: Max distance/Infinity
+            int distance = 1000;
             for(GameObject enemy : enemies){
                 if(items.containsKey(enemy.getType())) {
                     ArrayList<Vector2d> items_list = items.get(enemy.getType());
@@ -532,7 +530,7 @@ public class Heuristic {
         private int computeDistanceToNearestPowerUp(HashMap<Types.TILETYPE, ArrayList<Vector2d> > items)
         {
             Vector2d previousNode = new Vector2d(-1, -1); // placeholder, these values are not actually used
-            int distance = 1000; // TODO: Max distance/Infinity
+            int distance = 1000;
             for (Map.Entry<Types.TILETYPE, ArrayList<Vector2d>> entry : items.entrySet()) {
                 // check pickup entries on the board
                 if (entry.getKey().equals(Types.TILETYPE.EXTRABOMB) ||
@@ -598,7 +596,7 @@ public class Heuristic {
                         dist.put(position, 0);
                     }
                     else{
-                        dist.put(position, 100000); // TODO: Inf
+                        dist.put(position, 100000);
                     }
                 }
             }

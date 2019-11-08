@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("WeakerAccess")
-public class MCTSParams implements ParameterSet {
+public class GroupCParam implements ParameterSet {
 
     // Constants
     public final double HUGE_NEGATIVE = -1000;
@@ -33,8 +33,8 @@ public class MCTSParams implements ParameterSet {
     public int num_fmcalls = 2000;
     public int num_time = 40;
 
-    public MCTSParams(){}
-    public MCTSParams(ExtensionMode policy){this.policy = policy;}
+    public GroupCParam(){}
+    public GroupCParam(ExtensionMode policy){this.policy = policy;}
 
     @Override
     public void setParameterValue(String param, Object value) {

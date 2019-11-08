@@ -15,6 +15,4 @@ public class AggressiveDecision extends BaseDecision {
        }
        return falseNode;
    }
-
-
 }

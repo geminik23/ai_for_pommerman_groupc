@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class MCTSNode
 {
-    public MCTSParams params;
+    public GroupCParam params;
 
     private MCTSNode parent;
     private MCTSNode[] children;
@@ -34,12 +34,12 @@ public class MCTSNode
     // agent strategy
     private ActionStrategy strategy;
 
-    MCTSNode(MCTSParams p, Random rnd, int num_actions, Types.ACTIONS[] actions, ActionStrategy strategy) {
+    MCTSNode(GroupCParam p, Random rnd, int num_actions, Types.ACTIONS[] actions, ActionStrategy strategy) {
         this(p, null, -1, rnd, num_actions, actions, 0, null, strategy);
     }
 
-    private MCTSNode(MCTSParams p, MCTSNode parent, int childIdx, Random rnd, int num_actions,
-                           Types.ACTIONS[] actions, int fmCallsCount, Heuristic sh, ActionStrategy strategy) {
+    private MCTSNode(GroupCParam p, MCTSNode parent, int childIdx, Random rnd, int num_actions,
+                     Types.ACTIONS[] actions, int fmCallsCount, Heuristic sh, ActionStrategy strategy) {
         this.params = p;
         this.fmCallsCount = fmCallsCount;
         this.parent = parent;
