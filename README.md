@@ -1,4 +1,4 @@
-# GroupC Agent 
+# GroupC Agent
 
 ## Initialisation
 
@@ -31,3 +31,7 @@ public enum ExtensionMode {
     PREDICT_BOMB        // predicting the bomb explosion
 }
 ```
+
+## Paper
+
+[pommerman: An Experiment on Multi-agent AI playground](report_groupC.pdf)
