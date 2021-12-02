@@ -1,4 +1,4 @@
-# GroupC Agent
+# AI for Pommerman : GroupC Agent 
 
 ## Initialisation
 
